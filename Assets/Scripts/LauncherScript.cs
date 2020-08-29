@@ -8,6 +8,15 @@ public class LauncherScript : MonoBehaviour
 {
     public float compressSpeed;
     public float expandSpeed;
+    /*Sets the direction of the launcher
+     * 0 = no direction
+     * 1 = forward
+     * 2 = backward
+     * 3 = up
+     * 4 = down
+     * 5 = left
+     * 6 = right
+     */
     public int direction=0;
 
     private Rigidbody launcher;
