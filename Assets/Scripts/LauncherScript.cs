@@ -12,7 +12,7 @@ public class LauncherScript : MonoBehaviour
 
     private Rigidbody launcher;
     private Vector3 rotation;
-    private Vector3 position;
+    private Vector3 startPosition;
     private Vector3 moveDirection;
 
     // Start is called before the first frame update
@@ -20,12 +20,11 @@ public class LauncherScript : MonoBehaviour
     {
         launcher = GetComponent<Rigidbody>();
         rotation = launcher.transform.eulerAngles;
-        position = launcher.transform.position;
-        print(rotation);
-        print(position);
+        startPosition = launcher.transform.position;
         Direction();
     }
 
+    //Sets the Vector3 based on the direction the object is moving
     void Direction()
     {
         switch (direction)
@@ -60,18 +59,88 @@ public class LauncherScript : MonoBehaviour
 
     }
 
+
+    //Determines whether the launcher is allowed to move, and resets to original position if move in the wrong direction
+    bool allowedToMove() {
+        bool value=false;
+        Vector3 currentPostion = launcher.transform.position;
+        switch (direction) {
+            case 1:
+                if (startPosition.x < currentPostion.x)
+                {
+                    value = true;
+                }
+                else if (startPosition.x > currentPostion.x) {
+                    transform.position = startPosition;
+                }
+                break;
+            case 2:
+                if (startPosition.x > currentPostion.x)
+                {
+                    value = true;
+                }
+                else if (startPosition.x < currentPostion.x)
+                {
+                    transform.position = startPosition;
+                }
+                break;
+            case 3:
+                if (startPosition.y < currentPostion.y)
+                {
+                    value = true;
+                }
+                else if (startPosition.y > currentPostion.y)
+                {
+                    transform.position = startPosition;
+                }
+                break;
+            case 4:
+                if (startPosition.y > currentPostion.y)
+                {
+                    value = true;
+                }
+                else if (startPosition.y < currentPostion.y)
+                {
+                    transform.position = startPosition;
+                }
+                break;
+            case 5:
+                if (startPosition.z < currentPostion.z)
+                {
+                    value = true;
+                }
+                else if (startPosition.z > currentPostion.z)
+                {
+                    transform.position = startPosition;
+                }
+                break;
+            case 6:
+                if (startPosition.z > currentPostion.z)
+                {
+                    value = true;
+                }
+                else if (startPosition.z < currentPostion.z)
+                {
+                    transform.position = startPosition;
+                }
+                break;
+        }
+
+        return value;
+    }
+
     private void FixedUpdate()
     {
+        //Determines if the launcher should move, and which direction to
         if (Input.GetKey(KeyCode.Space))
         {
-            //Vector3 movement = new Vector3(movementX, 0.0F, movementY);
-
-            //transform.localPosition = new Vector3(pos_x+1*compressSpeed, pos_y, pos_z);
             transform.position += moveDirection * Time.deltaTime * compressSpeed;
         }
         else {
-            //Vector3 movement = new Vector3(movementX, 0.0F, movementY);
-            transform.position -= moveDirection * Time.deltaTime * expandSpeed;
+            if (allowedToMove())
+            {
+                transform.position -= moveDirection * Time.deltaTime * expandSpeed;
+            }
         }
     }
 }
