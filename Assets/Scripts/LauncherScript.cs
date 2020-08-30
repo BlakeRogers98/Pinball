@@ -75,64 +75,50 @@ public class LauncherScript : MonoBehaviour
         Vector3 currentPostion = launcher.transform.position;
         switch (direction) {
             case 1:
-                if (startPosition.x < currentPostion.x)
-                {
-                    value = true;
-                }
-                else if (startPosition.x > currentPostion.x) {
-                    transform.position = startPosition;
-                }
+                comparePositions(startPosition.x, currentPostion.x, true);
                 break;
             case 2:
-                if (startPosition.x > currentPostion.x)
-                {
-                    value = true;
-                }
-                else if (startPosition.x < currentPostion.x)
-                {
-                    transform.position = startPosition;
-                }
+                comparePositions(startPosition.x, currentPostion.x, false);
                 break;
             case 3:
-                if (startPosition.y < currentPostion.y)
-                {
-                    value = true;
-                }
-                else if (startPosition.y > currentPostion.y)
-                {
-                    transform.position = startPosition;
-                }
+                comparePositions(startPosition.y, currentPostion.y, true);
                 break;
             case 4:
-                if (startPosition.y > currentPostion.y)
-                {
-                    value = true;
-                }
-                else if (startPosition.y < currentPostion.y)
-                {
-                    transform.position = startPosition;
-                }
+                comparePositions(startPosition.y, currentPostion.y, false);
                 break;
             case 5:
-                if (startPosition.z < currentPostion.z)
-                {
-                    value = true;
-                }
-                else if (startPosition.z > currentPostion.z)
-                {
-                    transform.position = startPosition;
-                }
+                comparePositions(startPosition.z, currentPostion.z, true);
                 break;
             case 6:
-                if (startPosition.z > currentPostion.z)
-                {
-                    value = true;
-                }
-                else if (startPosition.z < currentPostion.z)
-                {
-                    transform.position = startPosition;
-                }
+                comparePositions(startPosition.z, currentPostion.z, false);
                 break;
+        }
+
+        return value;
+    }
+
+    //Compares the position of the start and current positions and determines whether the object is allowed to move
+    private bool comparePositions(float start, float current, bool greaterThan) {
+        bool value = false;
+
+        if (greaterThan)
+        {
+            if (start > current)
+            {
+                value = true;
+            }
+            else if (start < current) {
+                transform.position = startPosition;
+            }
+        }
+        else {
+            if (start < current)
+            {
+                value = true;
+            }
+            else if (start > current) {
+                transform.position = startPosition;
+            }
         }
 
         return value;
