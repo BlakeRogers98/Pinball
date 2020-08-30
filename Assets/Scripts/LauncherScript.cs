@@ -12,6 +12,10 @@ public class LauncherScript : MonoBehaviour
     public float pullbackLimit=0;
     public bool isDebug;
 
+    //Requires object to have a RigidBody that has a frozen position and rotation
+    public Rigidbody ignoreCollider1;
+    public Rigidbody ignoreCollider2;
+
     /*Sets the direction of the launcher
      * 0 = no direction
      * 1 = forward
@@ -28,6 +32,7 @@ public class LauncherScript : MonoBehaviour
     private Vector3 startPosition;
     private Vector3 moveDirection;
     private Vector3 pullbackVector;
+    private bool atRest=true;
 
     //Debug objects
     private object debug1;
@@ -44,6 +49,16 @@ public class LauncherScript : MonoBehaviour
         rotation = launcher.transform.eulerAngles;
         startPosition = launcher.transform.position;
         Direction();
+
+        //Ignores the colliders of any objects assigned
+        if (ignoreCollider1 != null)
+        {
+            Physics.IgnoreCollision(launcher.GetComponent<Collider>(), ignoreCollider1.GetComponent<Collider>());
+        }
+        if (ignoreCollider2 != null)
+        {
+            Physics.IgnoreCollision(launcher.GetComponent<Collider>(), ignoreCollider2.GetComponent<Collider>());
+        }
     }
 
     //Sets the Vector3 based on the direction the object is moving
@@ -181,28 +196,34 @@ public class LauncherScript : MonoBehaviour
     private bool comparePositionsExpand(float start, float current, bool greaterThan) {
         bool value = false;
 
-        if (start != current) {
+        if (start != current)
+        {
             if (greaterThan)
             {
                 if (start < current)
                 {
                     value = true;
                 }
-                else if (start > current) {
+                else if (start > current)
+                {
                     transform.position = startPosition;
                 }
-            } else {
+            }
+            else
+            {
                 if (start > current)
                 {
                     value = true;
                 }
-                else if (start < current || start == current) {
+                else if (start < current)
+                {
                     transform.position = startPosition;
                 }
             }
         }
-        debug1 = start;
-        debug2 = current;
+        else {
+            atRest = true;
+        }
         return value;
     }
 
@@ -250,6 +271,11 @@ public class LauncherScript : MonoBehaviour
         //Updates limit incase changed in editor
         Direction();
 
+        if (startPosition == launcher.transform.position)
+        {
+            atRest = true;
+        }
+
         //Determines if the launcher should move, and which direction to do so
         if (Input.GetKey(KeyCode.Space))
         {
@@ -259,19 +285,18 @@ public class LauncherScript : MonoBehaviour
                 float localx = (float)Math.Round(movement.x * 100f) / 100f;
                 float localy = (float)Math.Round(movement.y * 100f) / 100f;
                 float localz = (float)Math.Round(movement.z * 100f) / 100f;
-                debug3 = localx;
                 Vector3 moveVector = new Vector3(localx, localy, localz);
                 transform.position += moveVector;
+                atRest = false;
             }
         }
         else {
-            if (allowedToMove(true))
+            if (allowedToMove(true)&&!atRest)
             {
                 Vector3 movement = moveDirection * Time.deltaTime * expandSpeed;
                 float localx = (float)Math.Round(movement.x * 100f) / 100f;
                 float localy = (float)Math.Round(movement.y * 100f) / 100f;
                 float localz = (float)Math.Round(movement.z * 100f) / 100f;
-                debug3 = localx;
                 Vector3 moveVector = new Vector3(localx, localy, localz);
                 transform.position -= moveVector;
             }
