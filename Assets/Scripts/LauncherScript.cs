@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using System;
 
 public class LauncherScript : MonoBehaviour
 {
-    public float compressSpeed;
-    public float expandSpeed;
-    public float pullbackLimit;
+    public float compressSpeed=0;
+    public float expandSpeed=0;
+    public float pullbackLimit=0;
     public bool isDebug;
 
     /*Sets the direction of the launcher
@@ -29,9 +30,9 @@ public class LauncherScript : MonoBehaviour
     private Vector3 pullbackVector;
 
     //Debug objects
-    private string debug1;
-    private string debug2;
-    private string debug3;
+    private object debug1;
+    private object debug2;
+    private object debug3;
     public TextMeshProUGUI debugTextLine1;
     public TextMeshProUGUI debugTextLine2;
     public TextMeshProUGUI debugTextLine3;
@@ -180,25 +181,28 @@ public class LauncherScript : MonoBehaviour
     private bool comparePositionsExpand(float start, float current, bool greaterThan) {
         bool value = false;
 
-        if (greaterThan)
-        {
-            if (start > current)
+        if (start != current) {
+            if (greaterThan)
             {
-                value = true;
-            }
-            else if (start < current) {
-                transform.position = startPosition;
-            }
-        } else {
-            if (start < current)
-            {
-                value = true;
-            }
-            else if (start > current) {
-                transform.position = startPosition;
+                if (start < current)
+                {
+                    value = true;
+                }
+                else if (start > current) {
+                    transform.position = startPosition;
+                }
+            } else {
+                if (start > current)
+                {
+                    value = true;
+                }
+                else if (start < current || start == current) {
+                    transform.position = startPosition;
+                }
             }
         }
-
+        debug1 = start;
+        debug2 = current;
         return value;
     }
 
@@ -207,31 +211,31 @@ public class LauncherScript : MonoBehaviour
     {
         bool value = false;
 
-        if (greaterThan)
+        if (start != current)
         {
-            if ((start + pullbackLimit) > current)
+            if (greaterThan)
             {
-                value = true;
+                if ((start + pullbackLimit) > current)
+                {
+                    value = true;
+                }
+                else if (start + pullbackLimit < current)
+                {
+                    transform.position = pullbackVector;
+                }
             }
-            else if (start + pullbackLimit < current)
+            else
             {
-                transform.position = pullbackVector;
-            }
-            else {
+                if (start + pullbackLimit > current)
+                {
+                    value = true;
+                }
+                else if (start + pullbackLimit < current)
+                {
+                    transform.position = pullbackVector;
+                }
             }
         }
-        else
-        {
-            if (start + pullbackLimit > current)
-            {
-                value = true;
-            }
-            else if (start + pullbackLimit < current)
-            {
-                transform.position = pullbackVector;
-            }
-        }
-
         return value;
     }
 
@@ -242,18 +246,34 @@ public class LauncherScript : MonoBehaviour
         {
             debug();
         }
+
+        //Updates limit incase changed in editor
+        Direction();
+
         //Determines if the launcher should move, and which direction to do so
         if (Input.GetKey(KeyCode.Space))
         {
             if (allowedToMove(false))
             {
-                transform.position += moveDirection * Time.deltaTime * compressSpeed;
+                Vector3 movement = moveDirection * Time.deltaTime * compressSpeed;
+                float localx = (float)Math.Round(movement.x * 100f) / 100f;
+                float localy = (float)Math.Round(movement.y * 100f) / 100f;
+                float localz = (float)Math.Round(movement.z * 100f) / 100f;
+                debug3 = localx;
+                Vector3 moveVector = new Vector3(localx, localy, localz);
+                transform.position += moveVector;
             }
         }
         else {
             if (allowedToMove(true))
             {
-                transform.position -= moveDirection * Time.deltaTime * expandSpeed;
+                Vector3 movement = moveDirection * Time.deltaTime * expandSpeed;
+                float localx = (float)Math.Round(movement.x * 100f) / 100f;
+                float localy = (float)Math.Round(movement.y * 100f) / 100f;
+                float localz = (float)Math.Round(movement.z * 100f) / 100f;
+                debug3 = localx;
+                Vector3 moveVector = new Vector3(localx, localy, localz);
+                transform.position -= moveVector;
             }
         }
     }
