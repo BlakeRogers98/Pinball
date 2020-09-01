@@ -291,7 +291,7 @@ public class LauncherScript : MonoBehaviour
             }
         }
         else {
-            if (allowedToMove(true)&&!atRest)
+            if (allowedToMove(true) && !atRest)
             {
                 Vector3 movement = moveDirection * Time.deltaTime * expandSpeed;
                 float localx = (float)Math.Round(movement.x * 100f) / 100f;
@@ -299,6 +299,8 @@ public class LauncherScript : MonoBehaviour
                 float localz = (float)Math.Round(movement.z * 100f) / 100f;
                 Vector3 moveVector = new Vector3(localx, localy, localz);
                 transform.position -= moveVector;
+            } else if (launcher.transform.position != startPosition) {
+                launcher.transform.position=startPosition;
             }
         }
     }
